@@ -20,8 +20,8 @@ class KikwikIpTraceableListenerExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         // TODO: load configuration into the $definition
-        //$definition = $container->getDefinition('kikwik_utils.html5_validation');
-        //$definition->setArgument(0, $config['html5_validation']);
+        //$definition = $container->getDefinition('kikwik_iptraceable_listener.some_params');
+        //$definition->setArgument(0, $config['some_params']);
     }
 
 }
