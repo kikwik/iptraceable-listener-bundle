@@ -17,7 +17,7 @@ class IntegrationTest extends TestCase
 {
     private $kernel;
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         $filesystem = new Filesystem();
         $filesystem->remove($this->kernel->getCacheDir());
