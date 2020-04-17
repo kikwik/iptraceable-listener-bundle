@@ -6,7 +6,7 @@ use Gedmo\IpTraceable\IpTraceableListener;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class IpTraceSubscriber implements EventSubscriberInterface
+class IpTraceableSubscriber implements EventSubscriberInterface
 {
     /**
      * @var \Gedmo\IpTraceable\IpTraceableListener

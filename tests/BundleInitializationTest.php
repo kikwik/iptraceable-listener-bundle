@@ -5,7 +5,7 @@ namespace Kikwik\IpTraceableListenerBundle\Tests;
 
 
 use Gedmo\IpTraceable\IpTraceableListener;
-use Kikwik\IpTraceableListenerBundle\EventSubscriber\IpTraceSubscriber;
+use Kikwik\IpTraceableListenerBundle\EventSubscriber\IpTraceableSubscriber;
 use Kikwik\IpTraceableListenerBundle\KikwikIpTraceableListenerBundle;
 use Nyholm\BundleTest\BaseBundleTestCase;
 use Nyholm\BundleTest\CompilerPass\PublicServicePass;
@@ -41,6 +41,6 @@ class BundleInitializationTest extends BaseBundleTestCase
 
         $this->assertTrue($container->has('kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber'),'Conteiner has kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber');
         $service = $container->get('kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber');
-        $this->assertInstanceOf(IpTraceSubscriber::class, $service,'Service kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber is instance of IpTraceSubscriber');
+        $this->assertInstanceOf(IpTraceableSubscriber::class, $service,'Service kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber is instance of IpTraceSubscriber');
     }
 }
