@@ -5,7 +5,7 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
   <services>
 
-    <service id="gedmo.ip_traceable.ip_traceable_listener" class="Gedmo\IpTraceable\IpTraceableListener" public="true">
+    <service id="gedmo.ip_traceable.ip_traceable_listener" class="Gedmo\IpTraceable\IpTraceableListener">
       <tag name="doctrine.event_subscriber" connection="default"/>
       <call method="setAnnotationReader">
         <argument type="service" id="annotation_reader"/>
@@ -13,7 +13,7 @@
     </service>
     <service id="Gedmo\IpTraceable\IpTraceableListener" alias="gedmo.ip_traceable.ip_traceable_listener"/>
 
-    <service id="kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber" class="Kikwik\IpTraceableListenerBundle\EventSubscriber\IpTraceSubscriber" public="true">
+    <service id="kikwik.ip_traceable_listener.event_subscriber.ip_trace_subscriber" class="Kikwik\IpTraceableListenerBundle\EventSubscriber\IpTraceSubscriber">
       <argument type="service" id="gedmo.ip_traceable.ip_traceable_listener" />
       <argument type="service" id="request_stack" on-invalid="null" />
       <tag name="kernel.event_subscriber" />
