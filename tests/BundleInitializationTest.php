@@ -11,6 +11,8 @@ use Nyholm\BundleTest\BaseBundleTestCase;
 use Nyholm\BundleTest\CompilerPass\PublicServicePass;
 use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class BundleInitializationTest extends BaseBundleTestCase
 {
@@ -27,8 +29,7 @@ class BundleInitializationTest extends BaseBundleTestCase
         $this->addCompilerPass(new PublicServicePass('|kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber|'));
     }
 
-
-    public function testInitBundle()
+    private function initKernel()
     {
         // Create a new Kernel
         $kernel = $this->createKernel();
@@ -43,7 +44,12 @@ class BundleInitializationTest extends BaseBundleTestCase
         // Boot the kernel.
         $this->bootKernel();
 
-        // Get the container
+        return $kernel;
+    }
+
+    public function testInitBundle()
+    {
+        $kernel = $this->initKernel();
         $container = $this->getContainer();
 
         // Test if you services exists
@@ -53,9 +59,27 @@ class BundleInitializationTest extends BaseBundleTestCase
         ];
         foreach($services as $serviceId => $serviceClass)
         {
-            $this->assertTrue($container->has($serviceId),'Container has '.$serviceId);
+            $this->assertTrue($container->has($serviceId),'Container should have '.$serviceId);
             $service = $container->get($serviceId);
-            $this->assertInstanceOf($serviceClass, $service, 'Service '.$serviceId.' is instance of '.$serviceClass);
+            $this->assertInstanceOf($serviceClass, $service, 'Service '.$serviceId.' should be an instance of '.$serviceClass);
         }
+    }
+
+    public function testSetIp()
+    {
+        $kernel = $this->initKernel();
+        $container = $this->getContainer();
+
+        $listener = $container->get('gedmo.ip_traceable.ip_traceable_listener');
+        $subscriber = $container->get('kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber');
+
+        $requestMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')->getMock();
+        $requestMock->method('getClientIp')->willReturn('127.0.0.2');
+
+        $requestEventMock = $this->getMockBuilder('Symfony\Component\HttpKernel\Event\RequestEvent')->setConstructorArgs([$kernel,$requestMock,HttpKernelInterface::MASTER_REQUEST])->getMock();
+        $requestEventMock->method('getRequest')->willReturn($requestMock);
+
+        $subscriber->onKernelRequest($requestEventMock);
+        $this->assertEquals('127.0.0.2',$listener->getFieldValue(null,null,null),'IpTraceableSubscriber should copy user IP from Request to IpTraceableListener');
     }
 }
