@@ -79,7 +79,16 @@ class BundleInitializationTest extends BaseBundleTestCase
         $requestEventMock = $this->getMockBuilder('Symfony\Component\HttpKernel\Event\RequestEvent')->setConstructorArgs([$kernel,$requestMock,HttpKernelInterface::MASTER_REQUEST])->getMock();
         $requestEventMock->method('getRequest')->willReturn($requestMock);
 
+        // call onKernelRequest method
         $subscriber->onKernelRequest($requestEventMock);
-        $this->assertEquals('127.0.0.2',$listener->getFieldValue(null,null,null),'IpTraceableSubscriber should copy user IP from Request to IpTraceableListener');
+
+        if(method_exists($listener,'getFieldValue'))
+        {
+            $this->assertEquals('127.0.0.2',$listener->getFieldValue(null,null,null),'IpTraceableSubscriber should copy user IP from Request to IpTraceableListener');
+        }
+        else
+        {
+            $this->assertEquals('127.0.0.2',$listener->getIpValue(null,null),'IpTraceableSubscriber should copy user IP from Request to IpTraceableListener');
+        }
     }
 }
