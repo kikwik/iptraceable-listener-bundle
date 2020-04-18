@@ -9,6 +9,8 @@ use Kikwik\IpTraceableListenerBundle\EventSubscriber\IpTraceableSubscriber;
 use Kikwik\IpTraceableListenerBundle\KikwikIpTraceableListenerBundle;
 use Nyholm\BundleTest\BaseBundleTestCase;
 use Nyholm\BundleTest\CompilerPass\PublicServicePass;
+use Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 
 class BundleInitializationTest extends BaseBundleTestCase
 {
@@ -28,6 +30,16 @@ class BundleInitializationTest extends BaseBundleTestCase
 
     public function testInitBundle()
     {
+        // Create a new Kernel
+        $kernel = $this->createKernel();
+
+        // Add some configuration
+        $kernel->addConfigFile(__DIR__.'/config.yml');
+
+        // Add some other bundles we depend on
+        $kernel->addBundle(FrameworkBundle::class);
+        $kernel->addBundle(StofDoctrineExtensionsBundle::class);
+
         // Boot the kernel.
         $this->bootKernel();
 
@@ -35,12 +47,15 @@ class BundleInitializationTest extends BaseBundleTestCase
         $container = $this->getContainer();
 
         // Test if you services exists
-        $this->assertTrue($container->has('gedmo.ip_traceable.ip_traceable_listener'),'Container has gedmo.ip_traceable.ip_traceable_listener');
-        $service = $container->get('gedmo.ip_traceable.ip_traceable_listener');
-        $this->assertInstanceOf(IpTraceableListener::class, $service, 'Service gedmo.ip_traceable.ip_traceable_listener is instance of IpTraceableListener');
-
-        $this->assertTrue($container->has('kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber'),'Conteiner has kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber');
-        $service = $container->get('kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber');
-        $this->assertInstanceOf(IpTraceableSubscriber::class, $service,'Service kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber is instance of IpTraceSubscriber');
+        $services = [
+            'gedmo.ip_traceable.ip_traceable_listener' => IpTraceableListener::class,
+            'kikwik.ip_traceable_listener.event_subscriber.ip_traceable_subscriber' => IpTraceableSubscriber::class,
+        ];
+        foreach($services as $serviceId => $serviceClass)
+        {
+            $this->assertTrue($container->has($serviceId),'Container has '.$serviceId);
+            $service = $container->get($serviceId);
+            $this->assertInstanceOf($serviceClass, $service, 'Service '.$serviceId.' is instance of '.$serviceClass);
+        }
     }
 }
