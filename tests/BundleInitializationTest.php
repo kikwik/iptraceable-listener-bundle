@@ -82,6 +82,9 @@ class BundleInitializationTest extends BaseBundleTestCase
         // call onKernelRequest method
         $subscriber->onKernelRequest($requestEventMock);
 
+        // check that subscriber respond to the right event
+        $this->assertSame(['kernel.request' => 'onKernelRequest'],$subscriber::getSubscribedEvents(), 'IpTraceableSubscriber should respond to kernel.request event');
+
         if(method_exists($listener,'getFieldValue'))
         {
             $this->assertEquals('127.0.0.2',$listener->getFieldValue(null,null,null),'IpTraceableSubscriber should copy user IP from Request to IpTraceableListener');
